@@ -16,5 +16,15 @@ namespace Store.Sales.Domain
             Quantity = quantity;
             UnitPrice = unitPrice;
         }
+
+        internal void AddUnits(int units)
+        {
+            Quantity += units;
+        }
+
+        internal decimal ComputePrice()
+        {
+            return Quantity * UnitPrice;
+        }
     }
 }
