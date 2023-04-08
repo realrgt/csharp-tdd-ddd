@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Store.Core.DomainObjects;
+using System;
 using System.Linq;
 using Xunit;
 
@@ -40,6 +41,19 @@ namespace Store.Sales.Domain.Tests
             Assert.Equal(expected: 300, actual: order.TotalAmount);
             Assert.Equal(expected: 1, actual: order.OrderItems.Count);
             Assert.Equal(expected: 3, actual: order.OrderItems.FirstOrDefault(p => p.ProductId == productId).Quantity);
+        }
+
+        [Fact(DisplayName = "Add Order Item Above Allawed Quantity")]
+        [Trait("Category", "Order Tests")]
+        public void AddOrderItem_ItemAboveAllowedQuantity_ShouldReturnException()
+        {
+            // Arrange
+            var order = Order.OrderFactory.NewDraftOrder(Guid.NewGuid());
+            var productId = Guid.NewGuid();
+            var orderItem = new OrderItem(productId, productName: "Test Product", quantity: Order.MAX_ITEM_UNITS + 1, unitPrice: 100);
+
+            // Act & Assert
+            Assert.Throws<DomainException>(testCode: () => order.AddItem(orderItem));
         }
     }
 }
