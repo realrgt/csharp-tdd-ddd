@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Store.Core.DomainObjects;
+using System;
 
 namespace Store.Sales.Domain
 {
@@ -11,6 +12,8 @@ namespace Store.Sales.Domain
 
         public OrderItem(Guid productId, string productName, int quantity, decimal unitPrice)
         {
+            if (quantity < Order.MIN_ITEM_UNITS) throw new DomainException(message: $"Minimmum of {Order.MIN_ITEM_UNITS} units.");
+
             ProductId = productId;
             ProductName = productName;
             Quantity = quantity;

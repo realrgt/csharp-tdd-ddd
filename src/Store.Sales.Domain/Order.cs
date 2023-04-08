@@ -8,6 +8,9 @@ namespace Store.Sales.Domain
     public class Order
     {
         public static int MAX_ITEM_UNITS => 15;
+        public static int MIN_ITEM_UNITS => 1;
+
+
         public Guid CustomerId { get; private set; }
         public decimal TotalAmount { get; private set; }
         private readonly List<OrderItem> _orderItems;
