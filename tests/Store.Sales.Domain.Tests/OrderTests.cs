@@ -55,5 +55,20 @@ namespace Store.Sales.Domain.Tests
             // Act & Assert
             Assert.Throws<DomainException>(testCode: () => order.AddItem(orderItem));
         }
+
+        [Fact(DisplayName = "Add Existing Order Item Above Allawed Quantity")]
+        [Trait("Category", "Order Tests")]
+        public void AddOrderItem_ItemAboveAllowedUnitsSum_ShouldReturnException()
+        {
+            // Arrange
+            var order = Order.OrderFactory.NewDraftOrder(Guid.NewGuid());
+            var productId = Guid.NewGuid();
+            var orderItem2 = new OrderItem(productId, "Test Product", 1, 100);
+            var orderItem = new OrderItem(productId, "Test Product", Order.MAX_ITEM_UNITS, 100);
+            order.AddItem(orderItem);
+
+            // Act & Assert
+            Assert.Throws<DomainException>(testCode: () => order.AddItem(orderItem2));
+        }
     }
 }

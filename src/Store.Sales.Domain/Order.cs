@@ -27,17 +27,33 @@ namespace Store.Sales.Domain
             TotalAmount = OrderItems.Sum(item => item.ComputePrice());
         }
 
+        private bool IsExistingOrderItem(OrderItem item)
+        {
+            return _orderItems.Any(p => p.ProductId == item.ProductId);
+        }
+
+        private void ValidateAllowedItemQuantity (OrderItem item)
+        {
+            var itemsQuantity = item.Quantity;
+            if (IsExistingOrderItem(item))
+            {
+                var existingItem = _orderItems.FirstOrDefault(p => p.ProductId == item.ProductId);
+                itemsQuantity += existingItem.Quantity;
+            }
+
+            if (itemsQuantity > MAX_ITEM_UNITS) throw new DomainException(message: $"Maximmum of {MAX_ITEM_UNITS} units.");
+        }
+
         public void AddItem(OrderItem orderItem)
         {
-            if (orderItem.Quantity > MAX_ITEM_UNITS) throw new DomainException(message: $"Maximmum of {MAX_ITEM_UNITS} units.");
+            ValidateAllowedItemQuantity(orderItem);
 
-            if (_orderItems.Any(p => p.ProductId == orderItem.ProductId))
+            if (IsExistingOrderItem(orderItem))
             {
                 var existingItem = _orderItems.FirstOrDefault(p => p.ProductId == orderItem.ProductId);
+
                 existingItem.AddUnits(orderItem.Quantity);
-
                 orderItem = existingItem;
-
                 _orderItems.Remove(existingItem);
             }
 
