@@ -70,5 +70,17 @@ namespace Store.Sales.Domain.Tests
             // Act & Assert
             Assert.Throws<DomainException>(testCode: () => order.AddItem(orderItem2));
         }
+
+        [Fact(DisplayName = "Update Unexisting Order Item")]
+        [Trait("Category", "Order Tests")]
+        public void UpdateOrderItem_ItemNotInTheList_ShouldReturnException()
+        {
+            // Arrange
+            var order = Order.OrderFactory.NewDraftOrder(Guid.NewGuid());
+            var updatedOrderItem = new OrderItem(Guid.NewGuid(), "Test Product", 5, 100);
+
+            // Act & Assert
+            Assert.Throws<DomainException>(testCode: () => order.UpdateItem(updatedOrderItem));
+        }
     }
 }

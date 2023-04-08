@@ -32,6 +32,11 @@ namespace Store.Sales.Domain
             return _orderItems.Any(p => p.ProductId == item.ProductId);
         }
 
+        private void ValidateUnexistingOrderItem(OrderItem item)
+        {
+            if (!IsExistingOrderItem(item)) throw new DomainException(message: $"Item not present into the order.");
+        }
+
         private void ValidateAllowedItemQuantity (OrderItem item)
         {
             var itemsQuantity = item.Quantity;
@@ -59,6 +64,11 @@ namespace Store.Sales.Domain
 
             _orderItems.Add(orderItem);
             ComputeOrderPrice();
+        }
+
+        public void UpdateItem(OrderItem orderItem)
+        {
+            ValidateUnexistingOrderItem(orderItem);
         }
 
         public void MakeDraft()
