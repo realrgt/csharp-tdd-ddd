@@ -152,5 +152,26 @@ namespace Store.Sales.Domain.Tests
             // Act & Assert
             Assert.Throws<DomainException>(testCode: () => order.RemoveItem(orderItemToRemove));
         }
+
+        [Fact(DisplayName = "Remove Order Item Should Update Order Total Amount")]
+        [Trait("Category", "Sales - Order")]
+        public void RemoveOrderItem_ExistingItem_ShouldUpdateTotalAmount()
+        {
+            // Arrange
+            var order = Order.OrderFactory.NewDraftOrder(Guid.NewGuid());
+            var productId = Guid.NewGuid();
+            var orderItem1 = new OrderItem(Guid.NewGuid(), "XPTO Product", 2, 100);
+            var orderItem2 = new OrderItem(productId, "Test Product", 3, 15);
+            order.AddItem(orderItem1);
+            order.AddItem(orderItem2);
+
+            var totalAmount = orderItem2.Quantity * orderItem2.UnitPrice;
+
+            // Act
+            order.RemoveItem(orderItem1);
+
+            // Assert
+            Assert.Equal(expected: totalAmount, actual: order.TotalAmount);
+        }
     }
 }

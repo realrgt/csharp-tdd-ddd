@@ -82,6 +82,10 @@ namespace Store.Sales.Domain
         public void RemoveItem(OrderItem orderItem)
         {
             ValidateUnexistingOrderItem(orderItem);
+
+            _orderItems.Remove(orderItem);
+            
+            ComputeOrderPrice();
         }
 
         public void MakeDraft()
