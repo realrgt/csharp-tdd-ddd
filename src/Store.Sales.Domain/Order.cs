@@ -74,6 +74,8 @@ namespace Store.Sales.Domain
 
             _orderItems.Remove(existingitem);
             _orderItems.Add(orderItem);
+
+            ComputeOrderPrice();
         }
 
         public void MakeDraft()
