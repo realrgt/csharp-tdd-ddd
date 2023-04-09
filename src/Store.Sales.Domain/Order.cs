@@ -69,6 +69,7 @@ namespace Store.Sales.Domain
         public void UpdateItem(OrderItem orderItem)
         {
             ValidateUnexistingOrderItem(orderItem);
+            ValidateAllowedItemQuantity(orderItem);
 
             var existingitem = OrderItems.FirstOrDefault(p => p.ProductId == orderItem.ProductId);
 
