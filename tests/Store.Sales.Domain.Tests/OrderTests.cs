@@ -173,5 +173,35 @@ namespace Store.Sales.Domain.Tests
             // Assert
             Assert.Equal(expected: totalAmount, actual: order.TotalAmount);
         }
+
+        [Fact(DisplayName = "Apply valid voucher")]
+        [Trait("Category", "Sales - Order")]
+        public void Order_ApplyValidVoucher_ShouldCompleteWithSuccess()
+        {
+            // Arrange
+            var order = Order.OrderFactory.NewDraftOrder(Guid.NewGuid());
+            var voucher = new Voucher(code: "PROMO-15-MZN", discountAmount: 15, discountPercent: null, DiscountType.Amount, quantity: 1, DateTime.Now.AddDays(15), isActive: true, isUsed: false);
+
+            // Act
+            var result = order.ApplyVoucher(voucher);
+
+            // Assert
+            Assert.True(result.IsValid);
+        }
+
+        [Fact(DisplayName = "Apply invalid voucher")]
+        [Trait("Category", "Sales - Order")]
+        public void Order_ApplyInValidVoucher_ShouldCompleteWithSuccess()
+        {
+            // Arrange
+            var order = Order.OrderFactory.NewDraftOrder(Guid.NewGuid());
+            var voucher = new Voucher(code: "PROMO-15-MZN", discountAmount: 15, discountPercent: null, DiscountType.Amount, quantity: 1, DateTime.Now.AddDays(-1), isActive: true, isUsed: true);
+
+            // Act
+            var result = order.ApplyVoucher(voucher);
+
+            // Assert
+            Assert.False(result.IsValid);
+        }
     }
 }

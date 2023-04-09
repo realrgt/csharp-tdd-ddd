@@ -1,4 +1,5 @@
-﻿using Store.Core.DomainObjects;
+﻿using FluentValidation.Results;
+using Store.Core.DomainObjects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,8 @@ namespace Store.Sales.Domain
 
         public Guid CustomerId { get; private set; }
         public decimal TotalAmount { get; private set; }
+        public bool HasUsedVoucher { get; private set; }
+        public Voucher Voucher { get; private set; }
         private readonly List<OrderItem> _orderItems;
         public IReadOnlyCollection<OrderItem> OrderItems => _orderItems;
         public OrderStatus OrderStatus { get; private set; }
@@ -88,6 +91,17 @@ namespace Store.Sales.Domain
             ComputeOrderPrice();
         }
 
+        public ValidationResult ApplyVoucher(Voucher voucher)
+        {
+            var result = voucher.ValidateIsApplicable();
+            if (!result.IsValid) return result;
+
+            Voucher = voucher;
+            HasUsedVoucher = true;
+
+            return result;
+        }
+
         public void MakeDraft()
         {
             OrderStatus = OrderStatus.Draft;
@@ -106,6 +120,5 @@ namespace Store.Sales.Domain
                 return order;
             }
         }
-
     }
 }
