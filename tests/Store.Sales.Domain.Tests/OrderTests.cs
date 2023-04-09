@@ -82,5 +82,24 @@ namespace Store.Sales.Domain.Tests
             // Act & Assert
             Assert.Throws<DomainException>(testCode: () => order.UpdateItem(updatedOrderItem));
         }
+
+        [Fact(DisplayName = "Update Valid Order Item")]
+        [Trait("Category", "Order Tests")]
+        public void UpdateOrderItem_ValidItem_ShouldUpdateQuantity()
+        {
+            // Arrange
+            var order = Order.OrderFactory.NewDraftOrder(Guid.NewGuid());
+            var productId = Guid.NewGuid();
+            var orderItem = new OrderItem(productId, "Test Product", 2, 100);
+            order.AddItem(orderItem);
+            var updatedOrderItem = new OrderItem(productId, "Test Product", 5, 100);
+            var newQuantity = updatedOrderItem.Quantity;
+
+            // Act
+            order.UpdateItem(updatedOrderItem);
+
+            // Assert
+            Assert.Equal(expected: newQuantity, actual: order.OrderItems.FirstOrDefault(p => p.ProductId == productId).Quantity);
+        }
     }
 }
