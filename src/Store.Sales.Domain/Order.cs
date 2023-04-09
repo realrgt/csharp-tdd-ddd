@@ -79,6 +79,11 @@ namespace Store.Sales.Domain
             ComputeOrderPrice();
         }
 
+        public void RemoveItem(OrderItem orderItem)
+        {
+            ValidateUnexistingOrderItem(orderItem);
+        }
+
         public void MakeDraft()
         {
             OrderStatus = OrderStatus.Draft;
