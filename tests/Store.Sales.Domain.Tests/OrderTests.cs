@@ -203,5 +203,52 @@ namespace Store.Sales.Domain.Tests
             // Assert
             Assert.False(result.IsValid);
         }
+
+        [Fact(DisplayName = "Apply voucher type discount amount")]
+        [Trait("Category", "Sales - Order")]
+        public void ApplyVoucher_VoucherTypeDiscountAmount_ShouldDiscountTotalAmount()
+        {
+            // Arrange
+            var order = Order.OrderFactory.NewDraftOrder(Guid.NewGuid());
+            var productId = Guid.NewGuid();
+            var orderItem1 = new OrderItem(Guid.NewGuid(), "XPTO Product", 2, 100);
+            var orderItem2 = new OrderItem(Guid.NewGuid(), "Test Product", 3, 15);
+            order.AddItem(orderItem1);
+            order.AddItem(orderItem2);
+
+            var voucher = new Voucher(code: "PROMO-15-MZN", discountAmount: 15, discountPercent: null, DiscountType.Amount, quantity: 1, DateTime.Now.AddDays(15), isActive: true, isUsed: false);
+
+            var totalWithDiscountAmount = order.TotalAmount - voucher.DiscountAmount;
+
+            // Act
+            order.ApplyVoucher(voucher);
+
+            // Assert
+            Assert.Equal(expected: totalWithDiscountAmount, actual: order.TotalAmount);
+        }
+
+        [Fact(DisplayName = "Apply voucher type discount percentage")]
+        [Trait("Category", "Sales - Order")]
+        public void ApplyVoucher_VoucherTypeDiscountPercentage_ShouldDiscountTotalAmount()
+        {
+            // Arrange
+            var order = Order.OrderFactory.NewDraftOrder(Guid.NewGuid());
+            var productId = Guid.NewGuid();
+            var orderItem1 = new OrderItem(Guid.NewGuid(), "XPTO Product", 2, 100);
+            var orderItem2 = new OrderItem(Guid.NewGuid(), "Test Product", 3, 15);
+            order.AddItem(orderItem1);
+            order.AddItem(orderItem2);
+
+            var voucher = new Voucher(code: "PROMO-15-OFF", discountAmount: null, discountPercent: 15, DiscountType.Percentage, quantity: 1, DateTime.Now.AddDays(15), isActive: true, isUsed: false);
+
+            var discount = (order.TotalAmount * voucher.DiscountPercent) / 100;
+            var totalWithDiscountAmount = order.TotalAmount - discount;
+
+            // Act
+            order.ApplyVoucher(voucher);
+
+            // Assert
+            Assert.Equal(expected: totalWithDiscountAmount, actual: order.TotalAmount);
+        }
     }
 }

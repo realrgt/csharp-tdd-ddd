@@ -16,6 +16,7 @@ namespace Store.Sales.Domain
         public decimal TotalAmount { get; private set; }
         public bool HasUsedVoucher { get; private set; }
         public Voucher Voucher { get; private set; }
+        public decimal Discount { get; private set; }
         private readonly List<OrderItem> _orderItems;
         public IReadOnlyCollection<OrderItem> OrderItems => _orderItems;
         public OrderStatus OrderStatus { get; private set; }
@@ -99,7 +100,27 @@ namespace Store.Sales.Domain
             Voucher = voucher;
             HasUsedVoucher = true;
 
+            ComputeTotalAmountWithDiscount();
+
             return result;
+        }
+
+        public void ComputeTotalAmountWithDiscount()
+        {
+            if (!HasUsedVoucher) return;
+
+            decimal discount = 0;
+
+            if (Voucher.DiscountType == DiscountType.Amount)
+            {
+                discount = Voucher.DiscountAmount.Value;
+            } else
+            {
+                discount = (TotalAmount * Voucher.DiscountPercent.Value) / 100;
+            }
+
+            TotalAmount -= discount;
+            Discount = discount;
         }
 
         public void MakeDraft()
