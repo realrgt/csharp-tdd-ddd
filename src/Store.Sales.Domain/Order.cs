@@ -120,6 +120,7 @@ namespace Store.Sales.Domain
             }
 
             TotalAmount -= discount;
+            if (TotalAmount < 0) TotalAmount = 0;
             Discount = discount;
         }
 

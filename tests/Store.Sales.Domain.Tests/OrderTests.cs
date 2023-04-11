@@ -250,5 +250,21 @@ namespace Store.Sales.Domain.Tests
             // Assert
             Assert.Equal(expected: totalWithDiscountAmount, actual: order.TotalAmount);
         }
+
+        [Fact(DisplayName = "Apply voucher discount exceeds total amount")]
+        [Trait("Category", "Sales - Order")]
+        public void ApplyVoucher_DiscountExceedsOrderTotalAmount_OrderShouldHaveZeroValue()
+        {
+            // Arrange
+            var order = Order.OrderFactory.NewDraftOrder(Guid.NewGuid());
+            var orderItem1 = new OrderItem(Guid.NewGuid(), "XPTO Product", 2, 100);
+            var voucher = new Voucher(code: "PROMO-15-OFF", discountAmount: 300, discountPercent: null, DiscountType.Amount, quantity: 1, DateTime.Now.AddDays(15), isActive: true, isUsed: false);
+
+            // Act
+            order.ApplyVoucher(voucher);
+
+            // Assert
+            Assert.Equal(expected: 0, actual: order.TotalAmount);
+        }
     }
 }
