@@ -3,7 +3,7 @@ using System;
 using System.Linq;
 using Xunit;
 
-namespace Store.Sales.Domain.Application.Tests
+namespace Store.Sales.Domain.Application.Tests.Orders
 {
     public class AddOrderItemCommandTests
     {

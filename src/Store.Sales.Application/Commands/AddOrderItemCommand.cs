@@ -63,5 +63,4 @@ namespace Store.Sales.Application.Commands
                 .WithMessage(PriceErrorMsg);
         }
     }
-
 }
