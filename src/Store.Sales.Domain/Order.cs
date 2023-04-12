@@ -29,6 +29,7 @@ namespace Store.Sales.Domain
         private void ComputeOrderPrice()
         {
             TotalAmount = OrderItems.Sum(item => item.ComputePrice());
+            ComputeTotalAmountWithDiscount();
         }
 
         private bool IsExistingOrderItem(OrderItem item)
