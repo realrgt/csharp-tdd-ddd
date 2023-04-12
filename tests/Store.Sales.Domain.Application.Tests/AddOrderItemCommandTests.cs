@@ -1,5 +1,6 @@
 ﻿using Store.Sales.Application.Commands;
 using System;
+using System.Linq;
 using Xunit;
 
 namespace Store.Sales.Domain.Application.Tests
@@ -8,7 +9,7 @@ namespace Store.Sales.Domain.Application.Tests
     {
         [Fact(DisplayName = "Add Item Command Valid")]
         [Trait("Category", "Sales - Order Commands")]
-        public void AddOrderItemCommand_CommandIsEmpty_ShouldPassInValidation() 
+        public void AddOrderItemCommand_CommandIsValid_ShouldPassInValidation() 
         {
             // Arrange
             var orderCommand = new AddOrderItemCommand(Guid.NewGuid(), Guid.NewGuid(), "Test Product", 2, 100);
@@ -18,6 +19,25 @@ namespace Store.Sales.Domain.Application.Tests
 
             // Asser
             Assert.True(result);
+        }
+
+        [Fact(DisplayName = "Add Item Command Invalid")]
+        [Trait("Category", "Sales - Order Commands")]
+        public void AddOrderItemCommand_CommandIsInvalid_ShouldPassInValidation()
+        {
+            // Arrange
+            var orderCommand = new AddOrderItemCommand(Guid.Empty, Guid.Empty, "", 0, 0);
+
+            // Act
+            var result = orderCommand.IsValid();
+
+            // Assert
+            Assert.False(result);
+            Assert.Contains(AddOrderItemValidation.IdClientErrorMsg, orderCommand.ValidationResult.Errors.Select(c => c.ErrorMessage));
+            Assert.Contains(AddOrderItemValidation.IdProductErrorMsg, orderCommand.ValidationResult.Errors.Select(c => c.ErrorMessage));
+            Assert.Contains(AddOrderItemValidation.NameErrorMsg, orderCommand.ValidationResult.Errors.Select(c => c.ErrorMessage));
+            Assert.Contains(AddOrderItemValidation.QuantityMinErrorMsg, orderCommand.ValidationResult.Errors.Select(c => c.ErrorMessage));
+            Assert.Contains(AddOrderItemValidation.PriceErrorMsg, orderCommand.ValidationResult.Errors.Select(c => c.ErrorMessage));
         }
     }
 }
