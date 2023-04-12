@@ -55,7 +55,7 @@ namespace Store.Sales.Application.Commands
             RuleFor(c => c.Quantity)
                 .GreaterThan(0)
                 .WithMessage(QuantityMinErrorMsg)
-                .LessThan(Order.MAX_ITEM_UNITS)
+                .LessThanOrEqualTo(Order.MAX_ITEM_UNITS)
                 .WithMessage(QuantityMaxErrorMsg);
 
             RuleFor(c => c.UnitPrice)
