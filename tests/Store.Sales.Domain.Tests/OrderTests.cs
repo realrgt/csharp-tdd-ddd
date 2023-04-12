@@ -266,5 +266,27 @@ namespace Store.Sales.Domain.Tests
             // Assert
             Assert.Equal(expected: 0, actual: order.TotalAmount);
         }
+
+        [Fact(DisplayName = "Apply voucher recalculate discount when order is modified")]
+        [Trait("Category", "Sales - Order")]
+        public void ApplyVoucher_ModifiyOrderItems_ShouldCalculateTotalAmountsDiscount()
+        {
+            // Arrange
+            var order = Order.OrderFactory.NewDraftOrder(Guid.NewGuid());
+            var orderItem1 = new OrderItem(Guid.NewGuid(), "XPTO Product", 2, 100);
+            order.AddItem(orderItem1);
+
+            var voucher = new Voucher(code: "PROMO-15-OFF", discountAmount: 50, discountPercent: null, DiscountType.Amount, quantity: 1, DateTime.Now.AddDays(10), isActive: true, isUsed: false);
+            order.ApplyVoucher(voucher);
+
+            var orderItem2 = new OrderItem(Guid.NewGuid(), "Test Product", 4, 25);
+
+            // Act
+            order.AddItem(orderItem2);
+
+            // Assert
+            var expectedTotalAmount = order.OrderItems.Sum(i => i.Quantity * i.UnitPrice) - voucher.DiscountAmount;
+            Assert.Equal(expected: expectedTotalAmount, actual: order.TotalAmount);
+        }
     }
 }
