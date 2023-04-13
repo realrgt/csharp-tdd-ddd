@@ -1,2 +1,2 @@
-# csharp-tdd-ddd
+# CSharp-DDD
 Sample sharp tdd and ddd project
