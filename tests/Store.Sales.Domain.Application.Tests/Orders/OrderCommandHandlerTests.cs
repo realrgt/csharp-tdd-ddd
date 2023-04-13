@@ -61,5 +61,34 @@ namespace Store.Sales.Domain.Application.Tests.Orders
             mocker.GetMock<IOrderRepository>().Verify(expression: r => r.Update(It.IsAny<Order>()), Times.Once);
             mocker.GetMock<IOrderRepository>().Verify(r => r.UnitOfWork.Commit(), Times.Once);
         }
+
+        [Fact(DisplayName = "Add Existing Item to the Draft Order with success")]
+        [Trait("Category", "Sales - Order Command Handler")]
+        public async Task AddOrderItem_ExistingItemToTheDraftOrder_ShouldExecuteWithSuccess()
+        {
+            var customerId = Guid.NewGuid(); 
+            var productId = Guid.NewGuid();
+
+            var order = Order.OrderFactory.NewDraftOrder(customerId);
+            var existingOrderItem = new OrderItem(productId, "Product Xpto", 2, 100);
+            order.AddItem(existingOrderItem);
+
+            var orderCommand = new AddOrderItemCommand(customerId, productId, "Product Xpto", 2, 100);
+
+            var mocker = new AutoMocker();
+            var orderHandler = mocker.CreateInstance<OrderCommandHandler>();
+
+            mocker.GetMock<IOrderRepository>().Setup(r => r.GetOrderDraftByCustomerId(customerId)).Returns(Task.FromResult(order));
+            mocker.GetMock<IOrderRepository>().Setup(r => r.UnitOfWork.Commit()).Returns(Task.FromResult(true));
+
+            // Act
+            var result = await orderHandler.Handle(orderCommand, CancellationToken.None);
+
+            // Assert
+            Assert.True(result);
+            mocker.GetMock<IOrderRepository>().Verify(expression: r => r.UpdateItem(It.IsAny<OrderItem>()), Times.Once);
+            mocker.GetMock<IOrderRepository>().Verify(expression: r => r.Update(It.IsAny<Order>()), Times.Once);
+            mocker.GetMock<IOrderRepository>().Verify(r => r.UnitOfWork.Commit(), Times.Once);
+        }
     }
 }

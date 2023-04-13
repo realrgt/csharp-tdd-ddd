@@ -32,7 +32,7 @@ namespace Store.Sales.Domain
             ComputeTotalAmountWithDiscount();
         }
 
-        private bool IsExistingOrderItem(OrderItem item)
+        public bool IsExistingOrderItem(OrderItem item)
         {
             return _orderItems.Any(p => p.ProductId == item.ProductId);
         }

@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Store.Sales.Application.Events;
 using Store.Sales.Domain;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -29,8 +30,18 @@ namespace Store.Sales.Application.Commands
                 _orderRepository.Add(order);
             }
             else {
+
+                var existingOrderItem = order.IsExistingOrderItem(orderItem);
                 order.AddItem(orderItem);
-                _orderRepository.AddItem(orderItem);
+
+                if (existingOrderItem)
+                {
+                    _orderRepository.UpdateItem(order.OrderItems.FirstOrDefault(p => p.ProductId == orderItem.ProductId));
+                } else
+                {
+                    _orderRepository.AddItem(orderItem);
+                }
+
                 _orderRepository.Update(order);
             }
 
