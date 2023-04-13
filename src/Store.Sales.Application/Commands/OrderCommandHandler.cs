@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Store.Core.DomainObjects;
 using Store.Sales.Application.Events;
 using Store.Sales.Domain;
 using System.Linq;
@@ -20,6 +21,16 @@ namespace Store.Sales.Application.Commands
 
         public async Task<bool> Handle(AddOrderItemCommand message, CancellationToken cancellationToken)
         {
+            if (!message.IsValid())
+            {
+                foreach (var error in message.ValidationResult.Errors)
+                {
+                    await _mediator.Publish(new DomainNotification(message.MessageType, error.ErrorMessage), cancellationToken);
+                }
+
+                return false;
+            }
+
             var order = await _orderRepository.GetOrderDraftByCustomerId(message.CustomerId);
             var orderItem = new OrderItem(message.ProductId, message.Name, message.Quantity, message.UnitPrice);
 
