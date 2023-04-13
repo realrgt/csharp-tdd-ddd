@@ -4,6 +4,7 @@ using Moq.AutoMock;
 using Store.Sales.Application.Commands;
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Store.Sales.Domain.Application.Tests.Orders
@@ -12,7 +13,7 @@ namespace Store.Sales.Domain.Application.Tests.Orders
     {
         [Fact(DisplayName = "Add Item New Order with success")]
         [Trait("Category", "Sales - Order Command Handler")]
-        public void AddOrderItemCommand_CommandIsValid_ShouldPassInValidation()
+        public async Task AddOrderItemCommand_CommandIsValid_ShouldPassInValidation()
         {
             // Arrange
             var orderCommand = new AddOrderItemCommand(Guid.NewGuid(), Guid.NewGuid(), "Test Product", 2, 100);
@@ -21,7 +22,7 @@ namespace Store.Sales.Domain.Application.Tests.Orders
             var orderHandler = mocker.CreateInstance<OrderCommandHandler>();
 
             // Act
-            var result = orderHandler.Handle(orderCommand);
+            var result = await orderHandler.Handle(orderCommand, CancellationToken.None);
 
             // Assert
             Assert.True(result);

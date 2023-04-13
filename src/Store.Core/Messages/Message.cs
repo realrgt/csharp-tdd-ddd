@@ -12,5 +12,4 @@ namespace Store.Core.Messages
             MessageType = GetType().Name;
         }
     }
-
 }

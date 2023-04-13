@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Store.Sales.Domain
 {
-    public class Order
+    public class Order : Entity
     {
         public static int MAX_ITEM_UNITS => 15;
         public static int MIN_ITEM_UNITS => 1;
