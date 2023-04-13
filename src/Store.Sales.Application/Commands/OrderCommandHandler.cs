@@ -19,11 +19,20 @@ namespace Store.Sales.Application.Commands
 
         public async Task<bool> Handle(AddOrderItemCommand message, CancellationToken cancellationToken)
         {
+            var order = await _orderRepository.GetOrderDraftByCustomerId(message.CustomerId);
             var orderItem = new OrderItem(message.ProductId, message.Name, message.Quantity, message.UnitPrice);
-            var order = Order.OrderFactory.NewDraftOrder(message.ClientId);
-            order.AddItem(orderItem);
 
-            _orderRepository.Add(order);
+            if (order == null) {
+                order = Order.OrderFactory.NewDraftOrder(message.CustomerId);
+                order.AddItem(orderItem);
+
+                _orderRepository.Add(order);
+            }
+            else {
+                order.AddItem(orderItem);
+                _orderRepository.AddItem(orderItem);
+                _orderRepository.Update(order);
+            }
 
             order.AddEvent(new OrderItemAddedEvent(order.CustomerId, order.Id, message.ProductId, message.Name, message.UnitPrice, message.Quantity));
 

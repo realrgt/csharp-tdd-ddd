@@ -7,15 +7,15 @@ namespace Store.Sales.Application.Commands
 {
     public class AddOrderItemCommand : Command
     {
-        public Guid ClientId { get; private set; }
+        public Guid CustomerId { get; private set; }
         public Guid ProductId { get; private set; }
         public string Name { get; private set; }
         public int Quantity { get; private set; }
         public decimal UnitPrice { get; private set; }
 
-        public AddOrderItemCommand(Guid clientId, Guid productId, string name, int quantity, decimal unitPrice)
+        public AddOrderItemCommand(Guid customerId, Guid productId, string name, int quantity, decimal unitPrice)
         {
-            ClientId = clientId;
+            CustomerId = customerId;
             ProductId = productId;
             Name = name;
             Quantity = quantity;
@@ -40,7 +40,7 @@ namespace Store.Sales.Application.Commands
 
         public AddOrderItemValidation()
         {
-            RuleFor(c => c.ClientId)
+            RuleFor(c => c.CustomerId)
                 .NotEqual(Guid.Empty)
                 .WithMessage(IdClientErrorMsg);
 
