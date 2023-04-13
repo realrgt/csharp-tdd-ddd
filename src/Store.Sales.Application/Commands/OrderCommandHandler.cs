@@ -25,11 +25,9 @@ namespace Store.Sales.Application.Commands
 
             _orderRepository.Add(order);
 
-            await _mediator.Publish(
-                new OrderItemAddedEvent(order.CustomerId, order.Id, message.ProductId, message.Name, message.UnitPrice, message.Quantity), 
-                cancellationToken);
+            order.AddEvent(new OrderItemAddedEvent(order.CustomerId, order.Id, message.ProductId, message.Name, message.UnitPrice, message.Quantity));
 
-            return true;
+            return await _orderRepository.UnitOfWork.Commit();
         }
     }
 }
